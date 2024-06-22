@@ -1,0 +1,19 @@
+created:
+    - database/factories/WargaFactory.php
+    - database/factories/TransaksiFactory.php
+    - database/factories/TransaksiWargaFactory.php
+    - database/factories/BankUnitFactory.php
+    - database/migrations/2024_06_21_150534_create_wargas_table.php
+    - database/migrations/2024_06_21_150535_create_transaksis_table.php
+    - database/migrations/2024_06_21_150536_create_transaksi_wargas_table.php
+    - database/migrations/2024_06_21_150537_create_bank_units_table.php
+    - app/Models/Warga.php
+    - app/Models/Transaksi.php
+    - app/Models/TransaksiWarga.php
+    - app/Models/BankUnit.php
+models:
+    User: { name: string, email: string, email_verified_at: 'timestamp nullable default:NULL', password: string, remember_token: 'string:100 nullable default:NULL' }
+    Warga: { user_id: 'foreign constrained onDelete:cascade', bank_unit_id: 'foreign constrained onDelete:cascade', transaksi_id: 'foreign constrained onDelete:cascade', name: 'string index', alamat: longText, relationships: { hasMany: Transaksi } }
+    Transaksi: { code: 'string unique index', bank_unit_id: 'foreign constrained onDelete:cascade', warga_id: 'foreign constrained onDelete:cascade', berat: integer, kategori: string, status: string, tanggal: datetime, price: 'bigInteger default:5000', relationships: { belongsTo: 'Warga BankUnit' } }
+    TransaksiWarga: { transaksi_id: 'foreign constrained onDelete:cascade', warga_id: 'foreign constrained onDelete:cascade', berat: integer, price: integer, relationships: { belongsTo: 'Transaksi Warga' } }
+    BankUnit: { user_id: 'foreign constrained onDelete:cascade', name: 'string index', pengelola: string, alamat: string, relationships: { hasMany: Transaksi } }

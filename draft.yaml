@@ -1,0 +1,40 @@
+models:
+  Warga:
+    user_id: foreign constrained onDelete:cascade
+    bank_unit_id: foreign constrained onDelete:cascade
+    transaksi_id: foreign constrained onDelete:cascade
+    name: string index
+    alamat: longText
+    relationships:
+      hasMany: Transaksi
+
+  Transaksi:
+    code: string unique index
+    bank_unit_id: foreign constrained onDelete:cascade
+    warga_id: foreign constrained onDelete:cascade
+    berat: integer
+    kategori: string
+    status: string
+    tanggal: datetime
+    price: bigInteger default:5000
+    relationships:
+      belongsTo:
+          Warga
+          BankUnit
+
+  TransaksiWarga:
+    transaksi_id: foreign constrained onDelete:cascade
+    warga_id: foreign constrained onDelete:cascade
+    berat: integer
+    price: integer
+    relationships:
+      belongsTo:
+        Transaksi
+        Warga
+
+  BankUnit:
+    user_id: foreign constrained onDelete:cascade
+    name: string index
+    alamat: string
+    relationships:
+      hasMany: Transaksi
