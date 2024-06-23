@@ -22,7 +22,7 @@ class WargaResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel= 'Daftar Warga';
-    protected static ?string $modelLabel= 'Daftar Transaksi';
+    protected static ?string $modelLabel= 'Daftar Warga';
     protected static ?string $navigationGroup= 'Unit Administratif';
     protected static ?int $navigationSort= 2;
 

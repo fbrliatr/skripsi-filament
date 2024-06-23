@@ -51,8 +51,8 @@ class Warga extends Model
         return $this->belongsTo(BankUnit::class);
     }
 
-    public function transaksi(): BelongsTo
-    {
-        return $this->belongsTo(Transaksi::class);
-    }
+//     public function transaksi(): BelongsTo
+//     {
+//         return $this->belongsTo(Transaksi::class);
+//     }
 }

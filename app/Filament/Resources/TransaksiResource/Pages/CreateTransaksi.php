@@ -15,6 +15,11 @@ class CreateTransaksi extends CreateRecord
 
     protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
+        \Log::info('Data diterima untuk pembuatan transaksi:', $data);
+
+        if (!isset($data['transaksiWargas']) || !is_array($data['transaksiWargas'])) {
+            $data['transaksiWargas'] = [];
+        }
         return DB::transaction(function () use ($data) {
             $transaksi = Transaksi::create([
                 'code' => $data['code'],
@@ -22,8 +27,6 @@ class CreateTransaksi extends CreateRecord
                 'kategori' => $data['kategori'],
                 'status' => $data['status'],
                 'tanggal' => $data['tanggal'],
-                'price' => $data['price'],
-                // 'warga_id' => $data['warga_id'],
             ]);
             foreach ($data['transaksiWargas'] as $wargaData) {
                 $transaksi->transaksiWargas()->create([

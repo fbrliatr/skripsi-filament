@@ -33,7 +33,7 @@ class BankUnit extends Model
         'user_id' => 'integer',
     ];
 
-    public function transaksi(): HasMany
+    public function transaksis(): HasMany
     {
         return $this->hasMany(Transaksi::class);
     }

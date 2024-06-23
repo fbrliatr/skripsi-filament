@@ -150,11 +150,11 @@ class TransaksiResource extends Resource
             Forms\Components\DatePicker::make('tanggal')
                 ->date()
                 ->required(),
-            Forms\Components\TextInput::make('price')
-                ->required()
-                ->numeric()
-                ->default(5000)
-                ->prefix('$'),
+            // Forms\Components\TextInput::make('price')
+            //     ->required()
+            //     ->numeric()
+            //     ->default(5000)
+            //     ->prefix('$'),
 
                 ];
     }
@@ -168,13 +168,13 @@ class TransaksiResource extends Resource
                     ->relationship('warga','name')
                     ->required(),
 
-                Forms\Components\TextInput::make('Berat')
+                Forms\Components\TextInput::make('berat')
                     ->label('Berat')
                     ->numeric()
                     ->default(1)
                     ->required(),
 
-                Forms\Components\TextInput::make('Total')
+                Forms\Components\TextInput::make('price')
                     ->label('Total')
                     ->dehydrated()
                     ->numeric()

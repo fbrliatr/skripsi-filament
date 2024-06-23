@@ -6,17 +6,19 @@ models:
     name: string index
     alamat: longText
     relationships:
-      hasMany: Transaksi
+      hasMany:
+        Transaksi
+        TransaksiWarga
 
   Transaksi:
     code: string unique index
     bank_unit_id: foreign constrained onDelete:cascade
     warga_id: foreign constrained onDelete:cascade
-    berat: integer
+    # berat: integer
     kategori: string
     status: string
     tanggal: datetime
-    price: bigInteger default:5000
+    # price: bigInteger default:5000
     relationships:
       belongsTo:
           Warga
