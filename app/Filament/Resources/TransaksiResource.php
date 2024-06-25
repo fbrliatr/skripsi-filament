@@ -70,7 +70,8 @@ class TransaksiResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
+                    ->searchable()
+                    ->badge(),
                 Tables\Columns\TextColumn::make('kategori')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('warga.name')
