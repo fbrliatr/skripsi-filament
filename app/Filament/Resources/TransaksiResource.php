@@ -115,7 +115,10 @@ class TransaksiResource extends Resource
             //
         ];
     }
-
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Transaksi'; // Set the plural label to be the same as the singular label
+    }
     public static function getPages(): array
     {
         return [
@@ -133,7 +136,7 @@ class TransaksiResource extends Resource
                 ->default(function () {
                     $latestTransaksi = Transaksi::latest()->first();
                     return 'TXN-' . str_pad($latestTransaksi ? $latestTransaksi->id + 1 : 1, 6, '0', STR_PAD_LEFT);
-                    })
+                })
                 ->disabled()
                 ->dehydrated()
                 ->required()
@@ -151,6 +154,16 @@ class TransaksiResource extends Resource
             Forms\Components\DatePicker::make('tanggal')
                 ->date()
                 ->required(),
+            Forms\Components\Select::make('status')
+                ->options([
+                    'Requested' => 'Requested',
+                    'Diterima' => 'Diterima',
+                    'Menunggu' => 'Menunggu',
+                    'Dalam Perjalanan' => 'Dalam Perjalanan',
+                    'Selesai' =>'Selesai',
+                    'Ditolak'=> 'Ditolak',
+                ])
+                ->required(),
             // Forms\Components\TextInput::make('price')
             //     ->required()
             //     ->numeric()
@@ -166,7 +179,7 @@ class TransaksiResource extends Resource
             ->schema([
                 Forms\Components\Select::make('warga_id')
                     ->label('Warga')
-                    ->relationship('warga','name')
+                    ->relationship('warga', 'name')
                     ->required(),
 
                 Forms\Components\TextInput::make('berat')
@@ -180,7 +193,7 @@ class TransaksiResource extends Resource
                     ->dehydrated()
                     ->numeric()
                     ->required(),
-                ])
-        ->columns(3);
+            ])
+            ->columns(3);
     }
 }
