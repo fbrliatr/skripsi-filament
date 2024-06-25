@@ -27,10 +27,10 @@ class TransaksiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationLabel= 'Daftar Transaksi';
-    protected static ?string $modelLabel= 'Daftar Transaksi';
-    protected static ?string $navigationGroup= 'Unit Keuangan';
-    protected static ?int $navigationSort= 1;
+    protected static ?string $navigationLabel = 'Daftar Transaksi';
+    protected static ?string $modelLabel = 'Daftar Transaksi';
+    protected static ?string $navigationGroup = 'Unit Keuangan';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -46,7 +46,7 @@ class TransaksiResource extends Resource
                             static::getItemsRepeater(),
                         ])
                 ])
-                ->columnSpan(['lg' => fn (?Transaksi $record) => $record === null ? 3 : 2]),
+                    ->columnSpan(['lg' => fn(?Transaksi $record) => $record === null ? 3 : 2]),
         ]);
 
     }
@@ -74,15 +74,14 @@ class TransaksiResource extends Resource
                     ->badge(),
                 Tables\Columns\TextColumn::make('kategori')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('warga.name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('berat')
+                Tables\Columns\TextColumn::make('total_berat')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('price')
-                    ->money()
-                    ->sortable(),
+                    ->sortable()
+                    ->getStateUsing(fn($record) => $record->totalBerat() . ' kg'),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->numeric()
+                    ->sortable()
+                    ->getStateUsing(fn($record) => 'Rp' . $record->totalPengeluaran()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

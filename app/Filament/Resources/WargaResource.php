@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\WargaResource\Pages;
 use App\Filament\Resources\WargaResource\RelationManagers;
 use App\Models\Warga;
+use App\Models\TransaksiWarga;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -73,10 +74,12 @@ class WargaResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_berat')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->getStateUsing(fn (Warga $record): string => number_format($record->totalBerat(), 2).' kg'),
                 Tables\Columns\TextColumn::make('total_pendapatan')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->getStateUsing(fn (Warga $record): string => 'Rp'.number_format($record->totalTransaksiPrice(), 2)),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -108,6 +111,9 @@ class WargaResource extends Resource
         return [
             //
         ];
+    }public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Warga'; // Set the plural label to be the same as the singular label
     }
 
     public static function getPages(): array

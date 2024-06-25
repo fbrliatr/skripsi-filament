@@ -40,6 +40,18 @@ class Warga extends Model
     {
         return $this->hasMany(Transaksi::class);
     }
+    public function transaksiWargas(): HasMany
+    {
+        return $this->hasMany(TransaksiWarga::class);
+    }
+    public function totalTransaksiPrice(): float
+    {
+        return $this->transaksiWargas()->sum('price');
+    }
+    public function totalBerat(): float
+    {
+        return $this->transaksiWargas()->sum('berat');
+    }
 
     public function user(): BelongsTo
     {
