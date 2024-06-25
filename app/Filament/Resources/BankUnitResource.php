@@ -82,7 +82,10 @@ class BankUnitResource extends Resource
             //
         ];
     }
-
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Bank Unit'; // Set the plural label to be the same as the singular label
+    }
     public static function getPages(): array
     {
         return [
