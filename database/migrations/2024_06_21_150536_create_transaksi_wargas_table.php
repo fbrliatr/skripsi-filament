@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('warga_id')->constrained()->cascadeOnDelete();
             $table->integer('berat');
             $table->integer('price');
-            $table->foreignId('transaksi_warga_id');
             $table->timestamps();
         });
 
