@@ -35,17 +35,17 @@ class TransaksiResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Forms\Components\Group::make()
-                ->schema([
-                    Forms\Components\Section::make()
-                        ->schema(static::getDetailsFormSchema())
-                        ->columns(2),
-                    Forms\Components\Section::make('Transaksi Warga')
-                        ->schema([
-                            static::getItemsRepeater(),
-                        ])
-                ])
+            ->schema([
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make()
+                            ->schema(static::getDetailsFormSchema())
+                            ->columns(2),
+                        Forms\Components\Section::make('Transaksi Warga')
+                            ->schema([
+                                static::getItemsRepeater(),
+                            ])
+                    ])
                     ->columnSpan(['lg' => fn(?Transaksi $record) => $record === null ? 3 : 2]),
         ]);
 
