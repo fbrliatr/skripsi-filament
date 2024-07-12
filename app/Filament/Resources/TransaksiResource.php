@@ -8,15 +8,37 @@ use App\Models\Transaksi;
 use App\Models\Warga;
 use App\Models\TransaksiWarga;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Warga;
+use Filament\Forms\Form;
+use App\Models\Transaksi;
+use App\Enums\OrderStatus;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use App\Models\TransaksiWarga;
+use Tables\Columns\TimeColumn;
+use Filament\Resources\Resource;
+use Filament\Forms\ComponentGroup;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
+use Filament\Pages\Actions\EditAction;
+use Filament\Pages\Actions\ViewAction;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Tabs\Tab;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\BadgeColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use App\Filament\Resources\TransaksiResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TransaksiResource\RelationManagers;
 
 
 
@@ -25,7 +47,7 @@ class TransaksiResource extends Resource
 {
     protected static ?string $model = Transaksi::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
 
     protected static ?string $navigationLabel = 'Daftar Transaksi';
     protected static ?string $modelLabel = 'Daftar Transaksi';
@@ -147,11 +169,16 @@ class TransaksiResource extends Resource
             Forms\Components\TextInput::make('kategori')
                 ->required()
                 ->maxLength(255),
-            Forms\Components\TextInput::make('status')
-                ->required()
-                ->maxLength(255),
+            // Forms\Components\TextInput::make('status')
+            //     ->required()
+            //     ->maxLength(255),
             Forms\Components\DatePicker::make('tanggal')
                 ->date()
+                ->required(),
+            Forms\Components\TimePicker::make('jam_angkut')
+                ->label('Jam Angkut')
+                ->displayFormat('H:i') // Menampilkan jam dan menit
+                ->format('H:i')
                 ->required(),
             Forms\Components\Select::make('status')
                 ->options([

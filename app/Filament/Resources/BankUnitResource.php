@@ -6,10 +6,12 @@ use App\Filament\Resources\BankUnitResource\Pages;
 use App\Filament\Resources\BankUnitResource\RelationManagers;
 use App\Models\BankUnit;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -17,7 +19,7 @@ class BankUnitResource extends Resource
 {
     protected static ?string $model = BankUnit::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
     protected static ?string $navigationLabel= 'Daftar Bank Unit';
     protected static ?string $modelLabel= 'Daftar Bank Unit';
     protected static ?string $navigationGroup= 'Unit Administratif';
@@ -30,13 +32,32 @@ class BankUnitResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('user_id')
-                    ->label('Pengelola')
-                    ->relationship('user','name')
-                    ->required(),
+                Forms\Components\TextInput::make('pengelola')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('no_hp')
+                    ->tel()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+                // Forms\Components\Select::make('user_id')
+                //     ->label('Pengelola')
+                //     ->options(function () {
+                //         return User::whereHas('roles', function ($query) {
+                //                 $query->where('name', 'admin');
+                //             });
+                //         })
+                //     ->required(),
                 Forms\Components\TextInput::make('alamat')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('jarak')
+                    ->label('Jarak ke Bank Pusat')
+                    ->required()
+                    ->postfix('km'),
 
             ]);
     }
@@ -54,8 +75,14 @@ class BankUnitResource extends Resource
                 Tables\Columns\TextColumn::make('user.email')
                     ->label('Email')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('no_hp')
+                    ->label('No. Handphone')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('alamat')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('jarak')
                     ->searchable()
+                    ->sortable(),
 
 
             ])
@@ -68,11 +95,11 @@ class BankUnitResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                // Tables\Actions\CreateAction::make(),
             ]);
     }
 

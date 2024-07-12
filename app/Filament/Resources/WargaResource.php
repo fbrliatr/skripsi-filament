@@ -2,26 +2,29 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\WargaResource\Pages;
-use App\Filament\Resources\WargaResource\RelationManagers;
-use App\Models\Warga;
-use App\Models\TransaksiWarga;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Warga;
+use App\Models\User;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\TransaksiWarga;
 use PhpParser\Node\Stmt\Label;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\WargaResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\WargaResource\RelationManagers;
+use Spatie\Permission\Traits\HasRoles;
 
 class WargaResource extends Resource
 {
     protected static ?string $model = Warga::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationLabel= 'Daftar Warga';
     protected static ?string $modelLabel= 'Daftar Warga';
     protected static ?string $navigationGroup= 'Unit Administratif';
@@ -48,9 +51,16 @@ class WargaResource extends Resource
                 // Forms\Components\TextInput::make('password')
                 //     ->required()
                 //     ->maxLength(255),
-                Forms\Components\Select::make('bank_unit_id')
+                Forms\Components\Select::make('bank_unit')
                     ->label('Bank Unit Terdaftar')
-                    ->relationship('bankUnit', 'name')
+                    ->options(['Bank Unit 1' => 'Bank Unit 1',
+                    'Bank Unit 2' => 'Bank Unit 2',
+                    'Bank Unit 3' => 'Bank Unit 3',
+                    'Bank Unit 4' => 'Bank Unit 4',
+                    'Bank Unit 5' => 'Bank Unit 5',
+                    'Bank Unit 6' => 'Bank Unit 6',
+                    'Bank Unit 7' => 'Bank Unit 7',
+                    'Bank Unit 8' => 'Bank Unit 8'])
                     ->required(),
                 Forms\Components\Textarea::make('alamat')
                     ->required()
@@ -64,13 +74,15 @@ class WargaResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.email')
+                Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('bankUnit.name')
+                Tables\Columns\TextColumn::make('bank_unit')
                     ->searchable()
                     ->Label('Bank Unit Terdaftar'),
                 Tables\Columns\TextColumn::make('alamat')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('no_hp')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_berat')
                     ->numeric()

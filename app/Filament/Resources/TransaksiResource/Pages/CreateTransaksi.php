@@ -27,6 +27,7 @@ class CreateTransaksi extends CreateRecord
                 'kategori' => $data['kategori'],
                 'status' => $data['status'],
                 'tanggal' => $data['tanggal'],
+                'jam_angkut' => $data['jam_angkut'],
             ]);
             foreach ($data['transaksiWargas'] as $wargaData) {
                 $transaksi->transaksiWargas()->create([
