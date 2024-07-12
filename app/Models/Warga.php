@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Warga extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRoles;
+
 
     /**
      * The attributes that are mass assignable.
@@ -36,7 +39,7 @@ class Warga extends Model
         'transaksi_id' => 'integer',
     ];
 
-    public function transaksis(): HasMany
+    public function transaksi(): HasMany
     {
         return $this->hasMany(Transaksi::class);
     }
@@ -62,7 +65,9 @@ class Warga extends Model
     {
         return $this->belongsTo(BankUnit::class);
     }
-
+    // public function roles() {
+    //     return $this->belongsToMany(Role::class);
+    // }
 //     public function transaksi(): BelongsTo
 //     {
 //         return $this->belongsTo(Transaksi::class);

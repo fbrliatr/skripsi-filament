@@ -20,7 +20,10 @@ class BankUnit extends Model
         'user_id',
         'name',
         'pengelola',
+        'email',
         'alamat',
+        'no_hp',
+        'jarak'
     ];
 
     /**
