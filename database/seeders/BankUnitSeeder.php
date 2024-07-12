@@ -18,7 +18,7 @@ class BankUnitSeeder extends Seeder
     {
         DB::table('bank_units')->insert([
             [   'name' => 'Bank Unit 1',
-                'pengelola' => 'sukijem',
+                'user_id' => 'sukijem',
                 'alamat' => 'Jl. Margahayu RT.01',
             ],
             [

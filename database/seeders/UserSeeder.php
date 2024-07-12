@@ -25,21 +25,43 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Sukijem',
                 'email' => 'bankunit1@gmail.com',
+                'role' => '2',
                 'password' => Hash::make('password'),
             ],
             [
                 'name' => 'Rendy Pangalila',
                 'email' => 'bankunit4@gmail.com',
+                'roles_id' => '2',
                 'password' => Hash::make('password'),
             ],
             [
                 'name' => 'Mawar Ratna Sari',
                 'email' => 'bankunit5@gmail.com',
+                'roles_id' => '2',
                 'password' => Hash::make('password'),
             ],
             [
                 'name' => 'Arga Pangestu',
                 'email' => 'bankunit6@gmail.com',
+                'roles_id' => '2',
+                'password' => Hash::make('password'),
+            ],
+            [
+                'name' => 'Ayu Larasati',
+                'email' => 'ayularas@gmail.com',
+                'roles_id' => '3',
+                'password' => Hash::make('password'),
+            ],
+            [
+                'name' => 'Aika Ardana',
+                'email' => 'Aikarda@gmail.com',
+                'roles_id' => '3',
+                'password' => Hash::make('password'),
+            ],
+            [
+                'name' => 'Fidela Lathifa',
+                'email' => 'fidelala@gmail.com',
+                'roles_id' => '3',
                 'password' => Hash::make('password'),
             ],
         ]);

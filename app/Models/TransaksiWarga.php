@@ -15,8 +15,10 @@ class TransaksiWarga extends Model
      *
      * @var array
      */
+    // protected $table = 'transaksi_wargas'; // Pastikan nama tabel sesuai
+
     protected $fillable = [
-        'transaksi_id',
+        // 'transaksi_id',
         'warga_id',
         'berat',
         'price',
