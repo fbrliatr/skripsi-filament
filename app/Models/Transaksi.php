@@ -16,6 +16,8 @@ class Transaksi extends Model
      *
      * @var array
      */
+    protected $table = 'transaksi'; // Pastikan nama tabel sesuai
+
     protected $fillable = [
         'code',
         'bank_unit_id',

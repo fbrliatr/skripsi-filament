@@ -47,7 +47,7 @@ class TransaksiResource extends Resource
                             ])
                     ])
                     ->columnSpan(['lg' => fn(?Transaksi $record) => $record === null ? 3 : 2]),
-        ]);
+            ]);
 
     }
 
