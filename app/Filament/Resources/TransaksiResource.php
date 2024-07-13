@@ -2,14 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TransaksiResource\Pages;
-use App\Filament\Resources\TransaksiResource\RelationManagers;
-use App\Models\Transaksi;
-use App\Models\Warga;
-use App\Models\TransaksiWarga;
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Warga;
 use Filament\Forms\Form;
 use App\Models\Transaksi;
 use App\Enums\OrderStatus;
@@ -54,6 +48,13 @@ class TransaksiResource extends Resource
     protected static ?string $navigationGroup = 'Unit Keuangan';
     protected static ?int $navigationSort = 1;
 
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     return static::getModel()::where('status','Requested')->count() > 0
+    //     ?'warning'
+    //     :'success';
+
+    // }
     public static function form(Form $form): Form
     {
         return $form
@@ -73,9 +74,9 @@ class TransaksiResource extends Resource
 
     }
 
-                // Forms\Components\Textarea::make('description')
-                //     ->required()
-                //     ->columnSpanFull(),
+    // Forms\Components\Textarea::make('description')
+    //     ->required()
+    //     ->columnSpanFull(),
 
 
 
@@ -91,16 +92,27 @@ class TransaksiResource extends Resource
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('jam_angkut')
+                    ->label('Jam')
+                    ->sortable()
                     ->searchable()
-                    ->badge(),
+                    ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('H:i') : 'N/A'), // Format jam dan menit
+                Tables\Columns\BadgeColumn::make('status')
+                    ->searchable()
+                    ->badge()
+                    ->colors([
+                        'success' => fn ($state) => $state === 'Requested',
+                        'danger' => fn ($state) => $state === 'Ditolak',
+                        'warning' => fn ($state) => $state === 'Menunggu',
+
+                    ]),
                 Tables\Columns\TextColumn::make('kategori')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_berat')
                     ->numeric()
                     ->sortable()
                     ->getStateUsing(fn($record) => $record->totalBerat() . ' kg'),
-                Tables\Columns\TextColumn::make('total_price')
+                Tables\Columns\TextColumn::make('total_harga')
                     ->numeric()
                     ->sortable()
                     ->getStateUsing(fn($record) => 'Rp' . $record->totalPengeluaran()),
@@ -195,13 +207,19 @@ class TransaksiResource extends Resource
             //     ->numeric()
             //     ->default(5000)
             //     ->prefix('$'),
-
-                ];
+            Toggle::make('auto_generate')
+                ->autofocus() // Autofocus the field.
+                ->inline() // Render the toggle inline with its label.
+                ->offIcon('') // Set the icon that should be displayed when the toggle is off.
+                ->onIcon('') // Set the icon that should be displayed when the toggle is on.
+                // ->stacked(), // Render the toggle under its label.
+        ];
     }
     public static function getItemsRepeater(): Repeater
     {
         return Repeater::make('transaksiWargas')
             ->relationship('transaksiWargas')
+            ->label('Transaksi Warga')
             ->schema([
                 Forms\Components\Select::make('warga_id')
                     ->label('Warga')
@@ -211,14 +229,22 @@ class TransaksiResource extends Resource
                 Forms\Components\TextInput::make('berat')
                     ->label('Berat')
                     ->numeric()
-                    ->default(1)
+                    ->live(true)
                     ->required(),
+                    // ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                    //     if ($operation !== 'create') {
+                    //         return;
+                    //     }
+                    //     $berat = filter_var($state['berat'], FILTER_VALIDATE_INT);
+                    //     $price = $berat * 5000;
 
+                    //     // Set nilai 'price' dengan harga yang dihitung
+                    //     $set('price', $price);
+                    // }),
                 Forms\Components\TextInput::make('price')
                     ->label('Total')
-                    ->dehydrated()
                     ->numeric()
-                    ->required(),
+                    // ->disabled(),
             ])
             ->columns(3);
     }

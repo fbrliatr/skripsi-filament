@@ -43,6 +43,10 @@ class Warga extends Model
     {
         return $this->hasMany(Transaksi::class);
     }
+    public function penjadwalan(): HasMany
+    {
+        return $this->hasMany(Penjadwalan::class);
+    }
     public function transaksiWargas(): HasMany
     {
         return $this->hasMany(TransaksiWarga::class);
