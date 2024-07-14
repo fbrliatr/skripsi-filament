@@ -3,22 +3,29 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use App\Models\Warga;
-use App\Models\User;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\TransaksiWarga;
 use PhpParser\Node\Stmt\Label;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
+use Spatie\Permission\Traits\HasRoles;
+use Filament\Infolists\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\WargaResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\WargaResource\RelationManagers;
-use Spatie\Permission\Traits\HasRoles;
+use App\Filament\Resources\WargaResource\Widgets\DaftarTransaksi;
+
 
 class WargaResource extends Resource
 {
@@ -30,7 +37,21 @@ class WargaResource extends Resource
     protected static ?string $navigationGroup= 'Unit Administratif';
     protected static ?int $navigationSort= 2;
 
+    public static function tableQuery(): Builder
+    {
+        $user = Auth::user();
 
+        // Hanya tampilkan data sesuai peran pengguna yang sedang login
+        if ($user->hasRole('Bank Pusat')) {
+            return parent::tableQuery();
+        } elseif ($user->hasRole('Bank Unit')) {
+            return parent::tableQuery()->whereHas('roles', function ($query) {
+                $query->where('name', '!=', 'Bank Pusat');
+            });
+        } else {
+            return parent::tableQuery()->where('id', $user->id);
+        }
+    }
 
     public static function form(Form $form): Form
     {
@@ -71,6 +92,26 @@ class WargaResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $user = Auth::user();
+                if (!$user) {
+                    // Jika tidak ada pengguna yang login, tidak mengembalikan apapun
+                    return $query->whereRaw('1 = 0');
+                }
+
+                if ($user->hasRole('Bank Pusat')) {
+                    // Bank Pusat bisa melihat semua data
+                    return $query;
+                } elseif ($user->hasRole('Bank Unit')) {
+                    // Bank Unit bisa melihat data kecuali milik Bank Pusat
+                    return $query->whereHas('roles', function (Builder $query) {
+                        $query->where('name', '!=', 'Bank Pusat');
+                    });
+                } else {
+                    // Peran lain hanya bisa melihat data mereka sendiri
+                    return $query->where('user_id', $user->id);
+                }
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -80,9 +121,9 @@ class WargaResource extends Resource
                 Tables\Columns\TextColumn::make('bank_unit')
                     ->searchable()
                     ->Label('Bank Unit Terdaftar'),
-                Tables\Columns\TextColumn::make('alamat')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('no_hp')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('alamat')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_berat')
                     ->numeric()
@@ -116,14 +157,73 @@ class WargaResource extends Resource
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
+            // ->modifyQueryUsing(function (Builder $query) {
+            //     $user = Auth::user();
+            //     if (!$user) {
+            //         // Jika tidak ada pengguna yang login, tidak mengembalikan apapun
+            //         return $query->whereRaw('1 = 0');
+            //     }
+
+            //     if ($user->hasRole('Bank Pusat')) {
+            //         // Bank Pusat bisa melihat semua pengguna
+            //         return $query;
+            //     } elseif ($user->hasRole('Bank Unit')) {
+            //         // Bank Unit bisa melihat semua pengguna kecuali yang memiliki peran 'Bank Pusat'
+            //         return $query->whereHas('users', function ($query) {
+            //             $user=Auth::user();
+            //             $query->where('bank_unit', $user->id);
+            //         });
+            //     } else {
+            //         // Peran lain hanya bisa melihat diri mereka sendiri
+            //         return $query->where('id', $user->id);
+            //     }
+            // });
+
+
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            // ->can(Tables\Infolist::class);
+            ->schema([
+                // Grid::make('2') // Create a grid with 2 columns
+                // ->schema([
+                    Section::make('Data Diri')
+                        ->schema([
+                            Grid::make(3)
+                            ->schema([
+                                TextEntry::make('name')
+                                ->label('Nama Lengkap'),
+                                TextEntry::make('bank_unit')
+                                ->label('Bank Unit Terdaftar'),
+
+                                TextEntry::make('no_hp')
+                                ->label('No. Telepon')
+                                ->prefix('0'),
+                                TextEntry::make('alamat'),
+                                TextEntry::make('email'),
+                            ]),
+                        ]),
+                    Section::make('Pendapatan')
+                        ->schema([
+                            Grid::make()
+                            ->schema([
+                                TextEntry::make('total_berat')
+                                    ->getStateUsing(fn (Warga $record): string => number_format($record->totalBerat(), 2).' kg'),
+                                TextEntry::make('total_pendapatan')
+                                    ->getStateUsing(fn (Warga $record): string => 'Rp'.number_format($record->totalTransaksiPrice(), 2,',')),
+                            ]),
+                        ]),
+                    ]);
+    }
     public static function getRelations(): array
     {
         return [
             //
         ];
-    }public static function getPluralModelLabel(): string
+    }
+    public static function getPluralModelLabel(): string
     {
         return 'Daftar Warga'; // Set the plural label to be the same as the singular label
     }
@@ -135,6 +235,13 @@ class WargaResource extends Resource
             'create' => Pages\CreateWarga::route('/create'),
             'view' => Pages\ViewWarga::route('/{record}'),
             'edit' => Pages\EditWarga::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            DaftarTransaksi::Class
         ];
     }
 }
