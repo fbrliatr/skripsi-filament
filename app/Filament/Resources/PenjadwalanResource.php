@@ -47,26 +47,28 @@ class PenjadwalanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('bank_unit_id')
-                    ->relationship('bankUnit', 'name')
-                    ->required(),
-                Forms\Components\DatePicker::make('tgl_angkut')
-                    ->date()
-                    ->required(),
-                Forms\Components\DatePicker::make('tanggal')
-                    ->label('Tanggal Permintaan')
-                    ->date()
-                    ->required(),
+                // Forms\Components\Select::make('bank_unit_id')
+                //     ->relationship('bankUnit', 'name')
+                //     ->required(),
+                // Forms\Components\DatePicker::make('tgl_angkut')
+                //     ->date()
+                //     ->required(),
+                // Forms\Components\DatePicker::make('tanggal')
+                //     ->label('Tanggal Permintaan')
+                //     ->date()
+                //     ->required(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->modelLabel('Daftar Jadwal Permintaan')
             ->columns([
-                Tables\Columns\TextColumn::make('id_bank_unit')
+                Tables\Columns\TextColumn::make('bankUnit.name')
                     ->label('Bank Unit')
-                    ->prefix('Bank Unit '),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
                     ->sortable(),
@@ -75,9 +77,9 @@ class PenjadwalanResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('H:i') : 'N/A'), // Format jam dan menit
-                Tables\Columns\TextColumn::make('tgl_angkut')
-                    ->default('0000-00-00')
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('tgl_angkut')
+                //     ->default('0000-00-00')
+                //     ->sortable(),
                 ])
             ->filters([
                 //
