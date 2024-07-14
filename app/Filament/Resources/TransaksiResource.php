@@ -224,6 +224,17 @@ class TransaksiResource extends Resource
                 Forms\Components\Select::make('warga_id')
                     ->label('Warga')
                     ->relationship('warga', 'name')
+                    ->options(function () {
+                        $user = Auth::user();
+
+                        if ($user && $user->hasRole('Bank Unit')) {
+                            // Membatasi opsi berdasarkan bank unit pengguna yang sedang login
+                            return Warga::where('bank_unit', $user->bank_unit)
+                                ->pluck('name', 'id')
+                                ->toArray();
+                        }
+                        return [];
+                    })
                     ->required(),
 
                 Forms\Components\TextInput::make('berat')
