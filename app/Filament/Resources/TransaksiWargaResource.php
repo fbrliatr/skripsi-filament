@@ -24,33 +24,33 @@ class TransaksiWargaResource extends Resource
     public static function getPluralModelLabel(): string
     {
         $user = Auth::user();
-            if ($user->hasRole('Bank Unit')) {
+            if ($user->hasAnyRole('Bank Unit','Bank Pusat')) {
                 // Jika tidak ada pengguna yang login, tidak mengembalikan apapun
                 return 'Daftar Transaksi';
             }
 
-            if ($user->hasRole('Bank Pusat')) {
+            else {
                 return 'Transaksi Warga'; // Set the plural label to be the same as the singular label
             }
     }
     public static function form(Form $form): Form
     {
-        return $form;
-            // ->schema([
-            //     Forms\Components\Select::make('transaksi_id')
-            //         ->relationship('transaksi', 'id')
-            //         ->required(),
-            //     Forms\Components\Select::make('warga_id')
-            //         ->relationship('warga', 'name')
-            //         ->required(),
-            //     Forms\Components\TextInput::make('berat')
-            //         ->required()
-            //         ->numeric(),
-            //     Forms\Components\TextInput::make('price')
-            //         ->required()
-            //         ->numeric()
-            //         ->prefix('$'),
-            // ]);
+        return $form
+            ->schema([
+                Forms\Components\Select::make('transaksi_id')
+                    ->relationship('transaksi', 'id')
+                    ->required(),
+                Forms\Components\Select::make('warga_id')
+                    ->relationship('warga', 'name')
+                    ->required(),
+                Forms\Components\TextInput::make('berat')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('price')
+                    ->required()
+                    ->numeric()
+                    ->prefix('$'),
+            ]);
     }
 
     public static function table(Table $table): Table

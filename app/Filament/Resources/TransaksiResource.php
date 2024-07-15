@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Warga;
 use Filament\Forms\Form;
 use App\Models\Transaksi;
 use App\Enums\OrderStatus;
@@ -15,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Forms\ComponentGroup;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Group;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
@@ -48,13 +50,13 @@ class TransaksiResource extends Resource
     protected static ?string $navigationGroup = 'Unit Keuangan';
     protected static ?int $navigationSort = 1;
 
-    // public static function getNavigationBadge(): ?string
-    // {
-    //     return static::getModel()::where('status','Requested')->count() > 0
-    //     ?'warning'
-    //     :'success';
+    public static function getNavigationBadge(): ?string
+    {
+        $requestCount = static::getModel()::where('status', 'Requested')->count();
 
-    // }
+        return $requestCount > 0 ? (string) $requestCount : null;
+
+    }
     public static function form(Form $form): Form
     {
         return $form

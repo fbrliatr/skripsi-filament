@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Infolists\Components\Grid;
+use Filament\Navigation\NavigationItem;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
@@ -32,11 +33,22 @@ class WargaResource extends Resource
     protected static ?string $model = Warga::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationLabel= 'Daftar Warga';
+    // protected static ?string $navigationLabel= 'Daftar Warga';
     protected static ?string $modelLabel= 'Daftar Warga';
     protected static ?string $navigationGroup= 'Unit Administratif';
     protected static ?int $navigationSort= 2;
+    public static function configureNavigation(NavigationItem $item): NavigationItem
+    {
+        $user = Auth::user();
+        // Kondisi untuk menentukan judul sidebar
+        if (auth()->user()->hasAnyRole('Bank Pusat','Bank Unit')) {
+            $item->label('Transaksi Warga');
+        } else {
+            $item->label('Riwayat Transaksi');
+        }
 
+        return $item;
+    }
     public static function tableQuery(): Builder
     {
         $user = Auth::user();
@@ -225,17 +237,43 @@ class WargaResource extends Resource
     }
     public static function getPluralModelLabel(): string
     {
-        return 'Daftar Warga'; // Set the plural label to be the same as the singular label
+        $user = Auth::user();
+            if ($user->hasAnyRole('Bank Pusat','Bank Unit')) {
+                return 'Daftar Warga'; // Set the plural label to be the same as the singular label
+            }
+            else {
+                // Jika tidak ada pengguna yang login, tidak mengembalikan apapun
+                return 'Profil';
+            }
     }
 
     public static function getPages(): array
     {
-        return [
-            'index' => Pages\ListWargas::route('/'),
-            'create' => Pages\CreateWarga::route('/create'),
-            'view' => Pages\ViewWarga::route('/{record}'),
-            'edit' => Pages\EditWarga::route('/{record}/edit'),
-        ];
+        $user = Auth::user();
+            if ($user && $user ->hasAnyRole('Bank Pusat','Bank Unit')) {
+                return [
+                    'index' => Pages\ListWargas::route('/'),
+                    'create' => Pages\CreateWarga::route('/create'),
+                    'view' => Pages\ViewWarga::route('/{record}'),
+                    'edit' => Pages\EditWarga::route('/{record}/edit'),
+                ];
+            }
+            elseif ($user){
+                // Jika tidak ada pengguna yang login, tidak mengembalikan apapun
+                return [
+                    'index' => Pages\ListWargas::route('/'),
+                    'create' => Pages\CreateWarga::route('/create'),
+                    'view' => Pages\ViewWarga::route('/{record}'),
+                    'edit' => Pages\EditWarga::route('/{record}/edit'),
+                ];
+            }
+            else {
+                return [
+                    'index' => Pages\ListWargas::route('/'),
+                    'view' => Pages\ViewWarga::route('/{record}'),
+                    
+            ];
+            }
     }
 
     public static function getWidgets(): array
