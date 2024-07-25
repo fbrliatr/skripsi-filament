@@ -23,7 +23,7 @@ class CreateTransaksi extends CreateRecord
         return DB::transaction(function () use ($data) {
             $transaksi = Transaksi::create([
                 'code' => $data['code'],
-                'bank_unit_id' => $data['bank_unit_id'],
+                'bank_unit_name' => $data['bank_unit_name'],
                 'kategori' => $data['kategori'],
                 'status' => $data['status'],
                 'tanggal' => $data['tanggal'],
@@ -39,5 +39,9 @@ class CreateTransaksi extends CreateRecord
 
             return $transaksi;
         });
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

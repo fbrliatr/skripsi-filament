@@ -29,6 +29,16 @@ class BankUnitResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('id')
+                    ->default(function () {
+                        $latestTransaksi = BankUnit::latest()->first();
+                        return str_pad($latestTransaksi ? $latestTransaksi->id + 2 : 2, 6, '0', STR_PAD_LEFT);
+                    })
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->maxLength(32),
+                    // ->unique(BankUnit::class, 'id', ignoreRecord: true),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -69,15 +79,16 @@ class BankUnitResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('pengelola')
                     ->label('Pengelola')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.email')
+                Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('no_hp')
                     ->label('No. Handphone')
-                    ->searchable(),
+                    ->searchable()
+                    ->prefix('0'),
                 Tables\Columns\TextColumn::make('alamat')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jarak')

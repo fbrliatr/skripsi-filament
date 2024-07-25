@@ -39,4 +39,13 @@ class TransaksiWarga extends Model
     {
         return $this->belongsTo(Warga::class);
     }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function bankUnit(): BelongsTo
+    {
+        return $this->belongsTo(BankUnit::class);
+    }
+
 }

@@ -7,9 +7,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Query\Builder;
 use App\Filament\Resources\TransaksiResource;
 use Filament\Widgets\TableWidget as BaseWidget;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class Permintaan extends BaseWidget
 {
+    use HasWidgetShield;
+
     protected static ?string $pollingInterval = '15s';
     protected static ?int $sort = 3;
     protected int | string | array $columnSpan= 'full';
@@ -18,13 +22,14 @@ class Permintaan extends BaseWidget
 
     public function table(Table $table): Table
     {
+
         return $table
             ->query(TransaksiResource::getEloquentQuery()->where('status','requested'))
             ->defaultPaginationPageOption(5)
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('bankUnit.name')
+                Tables\Columns\TextColumn::make('bank_unit_name')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
@@ -42,7 +47,7 @@ class Permintaan extends BaseWidget
                 Tables\Columns\TextColumn::make('total_harga')
                     ->numeric()
                     ->sortable()
-                    ->getStateUsing(fn($record) => 'Rp' . $record->totalPengeluaran()),
+                    ->getStateUsing(fn($record) => 'Rp' .number_format($record->totalHarga())),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

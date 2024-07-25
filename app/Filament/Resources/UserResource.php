@@ -26,6 +26,10 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
 
+    protected static ?string $navigationGroup = 'Unit Administratif';
+
+    protected static ?int $navigationSort= 3;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -54,13 +58,11 @@ class UserResource extends Resource
                 Forms\Components\Select::make('bank_unit')
                     ->searchable()
                     ->options(['Bank Unit 1' => 'Bank Unit 1',
-                                'Bank Unit 2' => 'Bank Unit 2',
-                                'Bank Unit 3' => 'Bank Unit 3',
-                                'Bank Unit 4' => 'Bank Unit 4',
-                                'Bank Unit 5' => 'Bank Unit 5',
-                                'Bank Unit 6' => 'Bank Unit 6',
-                                'Bank Unit 7' => 'Bank Unit 7',
-                                'Bank Unit 8' => 'Bank Unit 8'])
+                               'Bank Unit 2' => 'Bank Unit 2',
+                               'Bank Unit 3' => 'Bank Unit 3',
+                               'Bank Unit 4' => 'Bank Unit 4',
+                               'Bank Unit 5' => 'Bank Unit 5',
+                               'Bank Unit 6' => 'Bank Unit 6'])
                     ->Label('Bank Unit Terdaftar'),
                 Forms\Components\TextArea::make('alamat')
                     ->required()

@@ -2,18 +2,23 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Resources\TransaksiResource;
+use Carbon\Carbon;
+use App\Models\Warga;
 use App\Models\Transaksi;
 use App\Models\TransaksiWarga;
-use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
+use App\Filament\Resources\TransaksiResource;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TotalPendapatan extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected static ?string $pollingInterval = '15s';
     protected static ?string $heading = 'Chart Pendapatan';
     protected static ?int $sort = 2;
-    protected static bool $isLazy = true;
+    // protected static bool $isLazy = true;
 
     protected function getData(): array
     {
@@ -22,11 +27,11 @@ class TotalPendapatan extends ChartWidget
             'datasets' =>[
                 [
                     'label'=> 'Jumlah Transaksi',
-                    'data' => $data['totalPendapatanPerBulan'],
+                    'data' => $data['total'],
                 ],
                 [
                     'label'=> 'Total Transaksi per Bulan',
-                    'data'=> $data['total'],
+                    'data'=> $data['totalPendapatanPerBulan'],
                 ],
             ],
             'labels'=> $data['bulan'],
@@ -39,30 +44,37 @@ class TotalPendapatan extends ChartWidget
     }
 
     private function getTotalPendapatanPerBulan(): array
-    {
-        $now = Carbon::now();
-        $totalPendapatanPerBulan = [];
-        $months = [];
+{
+    $now = Carbon::now();
+    $totalPendapatanPerBulan = [];
+    $total = []; // Initialize total array
+    $months = [];
 
-        for ($month = 1; $month <= 12; $month++) {
-            $startOfMonth = Carbon::create($now->year, $month, 1)->startOfMonth();
-            $endOfMonth = Carbon::create($now->year, $month, 1)->endOfMonth();
+    for ($month = 1; $month <= 12; $month++) {
+        $startOfMonth = Carbon::create($now->year, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::create($now->year, $month, 1)->endOfMonth();
 
-            $PendapatanPerBulan = Transaksi::whereBetween('created_at', [$startOfMonth, $endOfMonth]);
-            $PendapatanPerBulan2 = TransaksiWarga::whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+        // Get total transactions for the month
+        $totalbulan = TransaksiWarga::whereHas('transaksi', function($query) use ($startOfMonth, $endOfMonth) {
+            $query->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                  ->whereNotIn('status', ['Ditolak', 'Requested']);
+        });
+        $totalPendapatan = TransaksiWarga::whereHas('transaksi', function($query) use ($startOfMonth, $endOfMonth) {
+            $query->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                  ->whereNotIn('status', ['Ditolak', 'Requested']);
+        }); // Ensure the status conditions
 
-            $count = $PendapatanPerBulan->count();
-            $totalPendapatan = $PendapatanPerBulan2->sum('price');
-
-            $totalPendapatanPerBulan[] = $count;
-            $total[] = $totalPendapatan;
-            $months[] = $startOfMonth->format('M');
-        }
-
-        return [
-            'totalPendapatanPerBulan' => $totalPendapatanPerBulan,
-            'total' => $total,
-            'bulan' => $months,
-        ];
+        // Append the total pendapatan for the month
+        $totalPendapatanPerBulan[] = $totalPendapatan->sum('price');
+        $total[] = $totalbulan->count();
+        $months[] = $startOfMonth->format('M');
     }
+
+    return [
+        'totalPendapatanPerBulan' => $totalPendapatanPerBulan,
+        'bulan' => $months,
+        'total' => $total
+    ];
+}
+
 }

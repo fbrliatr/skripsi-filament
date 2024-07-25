@@ -17,13 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique()->index();
             $table->foreignId('bank_unit_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('warga_id')->constrained()->cascadeOnDelete();
-            $table->integer('berat');
+            // $table->foreignId('warga_id')->constrained()->cascadeOnDelete();
+            // $table->integer('berat');
             $table->string('kategori');
             $table->string('status');
             $table->dateTime('tanggal');
             $table->bigInteger('price')->default(5000);
-            $table->foreignId('warga_bank_unit_id');
+            // $table->foreignId('warga_bank_unit_id');
             $table->timestamps();
         });
 

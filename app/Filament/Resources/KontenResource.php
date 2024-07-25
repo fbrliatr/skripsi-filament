@@ -17,7 +17,7 @@ class KontenResource extends Resource
 {
     protected static ?string $model = Konten::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
     public static function form(Form $form): Form
     {
@@ -105,5 +105,9 @@ class KontenResource extends Resource
             'view' => Pages\ViewKonten::route('/{record}'),
             'edit' => Pages\EditKonten::route('/{record}/edit'),
         ];
+    }
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Konten'; // Set the plural label to be the same as the singular label
     }
 }

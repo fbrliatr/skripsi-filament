@@ -21,7 +21,7 @@ class Konten extends Model
             'title',
             'description',
             'image_path',
-            'image_name',
+            'image',
             'tgl_rilis',
     ];
         /**
@@ -36,18 +36,18 @@ class Konten extends Model
         'tgl_rilis' => 'datetime',
         'description' => 'string',
         'image_path' => 'string',
-        'image_name' => 'string',
+        'image' => 'string',
     ];
 
-    public static function boot()
-    {
-        parent::boot();
+    // public static function boot()
+    // {
+    //     parent::boot();
 
-        static::saving(function ($model) {
-            request()->validate([
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
-        });
-    }
+    //     static::saving(function ($model) {
+    //         request()->validate([
+    //             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    //         ]);
+    //     });
+    // }
 }
 

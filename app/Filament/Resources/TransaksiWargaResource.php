@@ -9,7 +9,9 @@ use Filament\Tables\Table;
 use App\Models\TransaksiWarga;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Exports\TransaksiWargaExporter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransaksiWargaResource\Pages;
 use App\Filament\Resources\TransaksiWargaResource\RelationManagers;
@@ -18,9 +20,12 @@ class TransaksiWargaResource extends Resource
 {
     protected static ?string $model = TransaksiWarga::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $navigationLabel = 'Transaksi Warga';
     protected static ?string $modelLabel = 'Transaksi Warga';
+    protected static ?string $navigationGroup = 'Daftar Transaksi';
+    protected static ?int $navigationSort= 2;
+
     public static function getPluralModelLabel(): string
     {
         $user = Auth::user();
@@ -30,7 +35,7 @@ class TransaksiWargaResource extends Resource
             }
 
             else {
-                return 'Transaksi Warga'; // Set the plural label to be the same as the singular label
+                return 'Riwayat Transaksi'; // Set the plural label to be the same as the singular label
             }
     }
     public static function form(Form $form): Form
@@ -49,7 +54,7 @@ class TransaksiWargaResource extends Resource
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
+                    ->prefix('Rp'),
             ]);
     }
 
@@ -87,7 +92,7 @@ class TransaksiWargaResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('warga.bank_unit')
-                ->label('Bank Unit')
+                    ->label('Bank Unit')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('berat')
@@ -127,6 +132,9 @@ class TransaksiWargaResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                ExportAction::make()->exporter(TransaksiWargaExporter::class)
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

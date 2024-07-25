@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Models\TransaksiWarga;
 use Tables\Columns\TimeColumn;
 use Filament\Resources\Resource;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\ComponentGroup;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Group;
@@ -28,8 +29,11 @@ use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Exports\TransaksiExporter;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\TransaksiResource\Pages;
@@ -45,9 +49,9 @@ class TransaksiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
 
-    protected static ?string $navigationLabel = 'Daftar Transaksi';
-    protected static ?string $modelLabel = 'Daftar Transaksi';
-    protected static ?string $navigationGroup = 'Unit Keuangan';
+    protected static ?string $navigationLabel = 'Transaksi Bank Unit';
+    protected static ?string $modelLabel = 'Transaksi Bank Unit';
+    protected static ?string $navigationGroup = 'Daftar Transaksi';
     protected static ?int $navigationSort = 1;
 
     public static function getNavigationBadge(): ?string
@@ -85,12 +89,36 @@ class TransaksiResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $user = Auth::user();
+                if (!$user) {
+                    // Jika tidak ada pengguna yang login, tidak mengembalikan apapun
+                    return $query->whereRaw('1 = 0');
+                }
+
+                if ($user->hasRole('Bank Pusat')) {
+                    // Bank Pusat bisa melihat semua data
+                    return $query;
+                }
+                elseif ($user->hasRole('Bank Unit')) {
+                    // $query->whereHas('transaksi', function (Builder $query) use ($user) {
+                    // Bank Unit bisa melihat data kecuali milik Bank Pusat
+                        return $query->where('bank_unit_name', $user->bank_unit);
+                    // });
+                } else {
+                    // Peran lain hanya bisa melihat data mereka sendiri
+                    return $query->where('user_id', $user->id);
+                }
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('bankUnit.name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('bank_unit_name')
+                    ->searchable(),
+                    // ->getStateUsing(fn($record) => $record->bankUnit()),
+
+                    // ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
                     ->sortable(),
@@ -117,7 +145,7 @@ class TransaksiResource extends Resource
                 Tables\Columns\TextColumn::make('total_harga')
                     ->numeric()
                     ->sortable()
-                    ->getStateUsing(fn($record) => 'Rp' . $record->totalPengeluaran()),
+                    ->getStateUsing(fn($record) => 'Rp' . number_format($record->totalHarga(),2)),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -131,8 +159,59 @@ class TransaksiResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    // Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('Edit Status')
+                        ->icon('heroicon-m-pencil-square')
+                        ->form([
+                            Select::make('status')
+                                ->label('Status')
+                                ->options([
+                                    'Requested' => 'Requested',
+                                    'Diterima' => 'Diterima',
+                                    'Menunggu' => 'Menunggu',
+                                    'Dalam Perjalanan' => 'Dalam Perjalanan',
+                                    'Selesai' =>'Selesai',
+                                    'Ditolak'=> 'Ditolak',
+                                ])
+                                ->default(function (Transaksi $transaksi) {
+                                    $status = null;
+                                    if ($transaksi->status == 'Requested') {
+                                        $status='Requested';
+                                    }
+                                    elseif ($transaksi->status == 'Diterima') {
+                                        $status='Diterima';
+                                    }
+                                    elseif ($transaksi->status == 'Menunggu') {
+                                        $status='Menunggu';
+                                    }
+                                    elseif ($transaksi->status == 'Dalam Perjalanan') {
+                                        $status='Dalam Perjalanan';
+                                    }
+                                    elseif ($transaksi->status == 'Selesai') {
+                                        $status='Selesai';
+                                    }
+                                    else {
+                                        $status='Ditolak';
+                                    }
+                                    return $status;
+                                }),
+                            ])
+                        ->action(function (Transaksi $transaksi, array $data): void {
+                            $transaksi->status = $data['status'];
+                            $transaksi->save();
+
+                            Notification::make()
+                                ->title('Status Transaksi Telah Diperbaharui')
+                                ->success()
+                                ->send();
+                        })
+                        ->visible(function () {
+                            return auth()->user()->hasRole('Bank Pusat');
+                        }),
+                    ])
+            ->headerActions([
+                ExportAction::make()->exporter(TransaksiExporter::class)
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -177,8 +256,15 @@ class TransaksiResource extends Resource
                 ->required()
                 ->maxLength(32)
                 ->unique(Transaksi::class, 'code', ignoreRecord: true),
-            Forms\Components\Select::make('bank_unit_id')
-                ->relationship('bankUnit', 'name')
+            Forms\Components\TextInput::make('bank_unit_name')
+                ->default(function () {
+                    $user = Auth::user();
+                    return $user ? $user->bank_unit : null;
+                })
+                ->dehydrated()
+                ->label('Bank Unit')
+                // ->disabled()
+                // ->relationship('bankUnit', 'name')
                 ->required(),
             Forms\Components\TextInput::make('kategori')
                 ->required()
@@ -195,6 +281,7 @@ class TransaksiResource extends Resource
                 ->format('H:i')
                 ->required(),
             Forms\Components\Select::make('status')
+                ->default('Requested')
                 ->options([
                     'Requested' => 'Requested',
                     'Diterima' => 'Diterima',
@@ -209,12 +296,12 @@ class TransaksiResource extends Resource
             //     ->numeric()
             //     ->default(5000)
             //     ->prefix('$'),
-            Toggle::make('auto_generate')
-                ->autofocus() // Autofocus the field.
-                ->inline() // Render the toggle inline with its label.
-                ->offIcon('') // Set the icon that should be displayed when the toggle is off.
-                ->onIcon('') // Set the icon that should be displayed when the toggle is on.
-                // ->stacked(), // Render the toggle under its label.
+            // Toggle::make('auto_generate')
+            //     ->autofocus() // Autofocus the field.
+            //     ->inline() // Render the toggle inline with its label.
+            //     ->offIcon('') // Set the icon that should be displayed when the toggle is off.
+            //     ->onIcon('') // Set the icon that should be displayed when the toggle is on.
+            //     // ->stacked(), // Render the toggle under its label.
         ];
     }
     public static function getItemsRepeater(): Repeater
@@ -235,7 +322,9 @@ class TransaksiResource extends Resource
                                 ->pluck('name', 'id')
                                 ->toArray();
                         }
-                        return [];
+                        else {
+                            return Warga::all()->pluck('name','id');
+                        }
                     })
                     ->required(),
 
@@ -256,6 +345,7 @@ class TransaksiResource extends Resource
                     // }),
                 Forms\Components\TextInput::make('price')
                     ->label('Total')
+                    ->prefix('Rp')
                     ->numeric()
                     // ->disabled(),
             ])

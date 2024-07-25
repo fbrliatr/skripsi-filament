@@ -21,7 +21,7 @@ class Warga extends Model
      */
     protected $fillable = [
         'user_id',
-        'bank_unit_id',
+        'bank_unit',
         'transaksi_id',
         'name',
         'alamat',
@@ -53,11 +53,16 @@ class Warga extends Model
     }
     public function totalTransaksiPrice(): float
     {
-        return $this->transaksiWargas()->sum('price');
+        return $this->transaksiWargas()->whereHas('transaksi', function($query) {
+            $query->whereNotIn('status',['Ditolak', 'Requested']);
+        })->sum('price');
     }
+
     public function totalBerat(): float
     {
-        return $this->transaksiWargas()->sum('berat');
+        return $this->transaksiWargas()->whereHas('transaksi', function($query) {
+            $query->whereNotIn('status',['Ditolak', 'Requested']);
+        })->sum('berat');
     }
 
     public function user(): BelongsTo

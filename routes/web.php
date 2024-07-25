@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Konten;
+use Filament\Http\Controllers\Auth\AuthenticatedSessionController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +19,16 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+
+Route::get('/', function () {
+    $kontens = Konten::all();
+    return view('landing', compact('kontens'));
+})->name('landing');
+
+// Route::get('admin/login', [AuthenticatedSessionController::class, 'create'])
+//     ->name('filament.auth.login');
+
+// Route::get('login', function () {
+//     return view('filament..auth.login'); // Jika ini adalah lokasi login
+// })->name('filament..auth.login');

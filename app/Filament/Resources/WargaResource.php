@@ -37,33 +37,33 @@ class WargaResource extends Resource
     protected static ?string $modelLabel= 'Daftar Warga';
     protected static ?string $navigationGroup= 'Unit Administratif';
     protected static ?int $navigationSort= 2;
-    public static function configureNavigation(NavigationItem $item): NavigationItem
-    {
-        $user = Auth::user();
-        // Kondisi untuk menentukan judul sidebar
-        if (auth()->user()->hasAnyRole('Bank Pusat','Bank Unit')) {
-            $item->label('Transaksi Warga');
-        } else {
-            $item->label('Riwayat Transaksi');
-        }
+    // public static function configureNavigation(NavigationItem $item): NavigationItem
+    // {
+    //     $user = Auth::user();
+    //     // Kondisi untuk menentukan judul sidebar
+    //     if (auth()->user()->hasAnyRole('Bank Pusat','Bank Unit')) {
+    //         $item->label('Transaksi Warga');
+    //     } else {
+    //         $item->label('Riwayat Transaksi');
+    //     }
 
-        return $item;
-    }
-    public static function tableQuery(): Builder
-    {
-        $user = Auth::user();
+    //     return $item;
+    // }
+    // public static function tableQuery(): Builder
+    // {
+    //     $user = Auth::user();
 
-        // Hanya tampilkan data sesuai peran pengguna yang sedang login
-        if ($user->hasRole('Bank Pusat')) {
-            return parent::tableQuery();
-        } elseif ($user->hasRole('Bank Unit')) {
-            return parent::tableQuery()->whereHas('roles', function ($query) {
-                $query->where('name', '!=', 'Bank Pusat');
-            });
-        } else {
-            return parent::tableQuery()->where('id', $user->id);
-        }
-    }
+    //     // Hanya tampilkan data sesuai peran pengguna yang sedang login
+    //     if ($user->hasRole('Bank Pusat')) {
+    //         return parent::tableQuery();
+    //     } elseif ($user->hasRole('Bank Unit')) {
+    //         return parent::tableQuery()->whereHas('roles', function ($query) {
+    //             $query->where('name', '!=', 'Bank Pusat');
+    //         });
+    //     } else {
+    //         return parent::tableQuery()->where('id', $user->id);
+    //     }
+    // }
 
     public static function form(Form $form): Form
     {
@@ -114,17 +114,18 @@ class WargaResource extends Resource
                 if ($user->hasRole('Bank Pusat')) {
                     // Bank Pusat bisa melihat semua data
                     return $query;
-                } elseif ($user->hasRole('Bank Unit')) {
+                }  elseif ($user->hasRole('Bank Unit')) {
                     // Bank Unit bisa melihat data kecuali milik Bank Pusat
-                    return $query->whereHas('roles', function (Builder $query) {
-                        $query->where('name', '!=', 'Bank Pusat');
-                    });
+                        return $query->where('bank_unit', $user->bank_unit);
                 } else {
                     // Peran lain hanya bisa melihat data mereka sendiri
                     return $query->where('user_id', $user->id);
                 }
             })
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->searchable()
+                    ->label('No.'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
@@ -134,7 +135,8 @@ class WargaResource extends Resource
                     ->searchable()
                     ->Label('Bank Unit Terdaftar'),
                 Tables\Columns\TextColumn::make('no_hp')
-                    ->searchable(),
+                    ->searchable()
+                    ->prefix('0'),
                 Tables\Columns\TextColumn::make('alamat')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_berat')
@@ -167,7 +169,7 @@ class WargaResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                // Tables\Actions\CreateAction::make(),
             ]);
             // ->modifyQueryUsing(function (Builder $query) {
             //     $user = Auth::user();
@@ -250,7 +252,7 @@ class WargaResource extends Resource
     public static function getPages(): array
     {
         $user = Auth::user();
-            if ($user && $user ->hasAnyRole('Bank Pusat','Bank Unit')) {
+            if ($user && $user->hasAnyRole('Bank Pusat','Bank Unit')) {
                 return [
                     'index' => Pages\ListWargas::route('/'),
                     'create' => Pages\CreateWarga::route('/create'),
@@ -270,8 +272,11 @@ class WargaResource extends Resource
             else {
                 return [
                     'index' => Pages\ListWargas::route('/'),
+                    'create' => Pages\CreateWarga::route('/create'),
                     'view' => Pages\ViewWarga::route('/{record}'),
-                    
+                    'edit' => Pages\EditWarga::route('/{record}/edit'),
+
+
             ];
             }
     }
