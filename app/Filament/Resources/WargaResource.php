@@ -12,15 +12,19 @@ use App\Models\TransaksiWarga;
 use PhpParser\Node\Stmt\Label;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+// use Filament\Actions\ExportAction;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Spatie\Permission\Traits\HasRoles;
+use App\Filament\Exports\WargaExporter;
 use Filament\Infolists\Components\Grid;
 use Filament\Navigation\NavigationItem;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
+use Filament\Actions\Exports\Models\Export;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\WargaResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -163,6 +167,9 @@ class WargaResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
+            ->headerActions([
+                ExportAction::make()->exporter(WargaExporter::class)
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -208,13 +215,13 @@ class WargaResource extends Resource
                             Grid::make(3)
                             ->schema([
                                 TextEntry::make('name')
-                                ->label('Nama Lengkap'),
+                                    ->label('Nama Lengkap'),
                                 TextEntry::make('bank_unit')
-                                ->label('Bank Unit Terdaftar'),
+                                    ->label('Bank Unit Terdaftar'),
 
                                 TextEntry::make('no_hp')
-                                ->label('No. Telepon')
-                                ->prefix('0'),
+                                    ->label('No. Telepon')
+                                    ->prefix('0'),
                                 TextEntry::make('alamat'),
                                 TextEntry::make('email'),
                             ]),

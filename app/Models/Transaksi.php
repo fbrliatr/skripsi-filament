@@ -48,6 +48,11 @@ class Transaksi extends Model
     {
         return $this->hasMany(TransaksiWarga::class);
     }
+
+    public function penjadwalan(): hasMany
+    {
+        return $this->hasMany(Penjadwalan::class);
+    }
     public function totalBerat(): float
     {
         return $this->transaksiWargas()->sum('berat');
@@ -55,16 +60,25 @@ class Transaksi extends Model
 
     public function totalPengeluaran(): float
     {
+        return $this->transaksiWargas()->whereHas('transaksi', function($query) {
+            $query->whereNotIn('status',['Ditolak', 'Requested']);
+        })->sum('price');
+    }
+    public function totalHarga(): float{
         return $this->transaksiWargas()->sum('price');
     }
 
     public function bankUnit(): BelongsTo
     {
-        return $this->belongsTo(BankUnit::class);
+        return $this->belongsTo(BankUnit::class, 'bank_unit_name');
     }
 
     public function warga(): BelongsTo
     {
         return $this->belongsTo(Warga::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
