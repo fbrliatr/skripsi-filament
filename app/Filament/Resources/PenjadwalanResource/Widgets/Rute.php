@@ -25,6 +25,7 @@ class Rute extends BaseWidget
             ->defaultPaginationPageOption(2)
             ->columns([
                 Tables\Columns\TextColumn::make('route')
+                    ->label('Urutan Rute')
                     ->searchable()
                     ->badge(),
                 Tables\Columns\TextColumn::make('tgl_angkut')
@@ -33,7 +34,9 @@ class Rute extends BaseWidget
                 Tables\Columns\TextColumn::make('jam_angkut')
                     ->sortable()
                     ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('H:i') : 'N/A'), // Format jam dan menit
-
+            ])
+            ->actions([
+                Tables\Actions\DeleteAction::make(),
             ]);
     }
 }

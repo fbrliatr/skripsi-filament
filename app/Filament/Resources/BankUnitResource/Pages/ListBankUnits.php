@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\BankUnitResource\Pages;
 
-use App\Filament\Resources\BankUnitResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\BankUnitResource;
 
 class ListBankUnits extends ListRecords
 {
@@ -15,4 +15,5 @@ class ListBankUnits extends ListRecords
         return [
         ];
     }
+
 }

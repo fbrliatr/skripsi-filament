@@ -31,7 +31,7 @@ class TransaksiWargaResource extends Resource
         $user = Auth::user();
             if ($user->hasAnyRole('Bank Unit','Bank Pusat')) {
                 // Jika tidak ada pengguna yang login, tidak mengembalikan apapun
-                return 'Daftar Transaksi';
+                return 'Daftar Transaksi Warga';
             }
 
             else {
@@ -87,12 +87,15 @@ class TransaksiWargaResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('transaksi.code')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('warga.name')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('warga.bank_unit')
                     ->label('Bank Unit')
+                    ->searchable()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('berat')
@@ -106,10 +109,12 @@ class TransaksiWargaResource extends Resource
                 Tables\Columns\TextColumn::make('transaksi.tanggal')
                     ->label('Tanggal Transaksi')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\BadgeColumn::make('transaksi.status')
                     ->label('Status')
                     ->searchable()
+                    ->sortable()
                     ->badge()
                     ->colors([
                         'success' => fn ($state) => $state === 'Requested',
@@ -131,11 +136,18 @@ class TransaksiWargaResource extends Resource
             ])
             ->actions([
                 // Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->visible(fn () => Auth::user()->hasRole(['Bank Unit', 'Bank Pusat'])),
             ])
             ->headerActions([
                 ExportAction::make()->exporter(TransaksiWargaExporter::class)
             ])
+            ->recordUrl(function ($record) {
+                // if ($record->trashed()){
+                //     return null;
+                // }
+                return Pages\ViewTransaksiWarga::getUrl([$record->id]);
+            })
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

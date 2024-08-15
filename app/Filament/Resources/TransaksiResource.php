@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Actions\ActionGroup;
 use Filament\Forms\ComponentGroup;
 use Filament\Forms\Components\Tabs;
+use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Group;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
@@ -31,6 +32,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Exports\TransaksiExporter;
@@ -115,13 +118,16 @@ class TransaksiResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bank_unit_name')
+                    ->label('Nama Bank Unit')
+                    ->sortable()
                     ->searchable(),
                     // ->getStateUsing(fn($record) => $record->bankUnit()),
 
                     // ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('jam_angkut')
                     ->label('Jam')
                     ->sortable()
@@ -130,17 +136,16 @@ class TransaksiResource extends Resource
                 Tables\Columns\BadgeColumn::make('status')
                     ->searchable()
                     ->badge()
+                    ->sortable()
                     ->colors([
-                        'success' => fn ($state) => $state === 'Requested',
+                        'warning' => fn ($state) => $state === 'Menunggu' or $state === 'Requested' or $state === 'Dalam Perjalanan',
                         'danger' => fn ($state) => $state === 'Ditolak',
-                        'warning' => fn ($state) => $state === 'Menunggu',
-
                     ]),
                 Tables\Columns\TextColumn::make('kategori')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('total_berat')
                     ->numeric()
-                    ->sortable()
                     ->getStateUsing(fn($record) => $record->totalBerat() . ' kg'),
                 Tables\Columns\TextColumn::make('total_harga')
                     ->numeric()
@@ -156,66 +161,75 @@ class TransaksiResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
-            ->actions([
-                    Tables\Actions\ViewAction::make(),
-                    // Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('Edit Status')
-                        ->icon('heroicon-m-pencil-square')
-                        ->form([
-                            Select::make('status')
-                                ->label('Status')
-                                ->options([
-                                    'Requested' => 'Requested',
-                                    'Diterima' => 'Diterima',
-                                    'Menunggu' => 'Menunggu',
-                                    'Dalam Perjalanan' => 'Dalam Perjalanan',
-                                    'Selesai' =>'Selesai',
-                                    'Ditolak'=> 'Ditolak',
-                                ])
-                                ->default(function (Transaksi $transaksi) {
-                                    $status = null;
-                                    if ($transaksi->status == 'Requested') {
-                                        $status='Requested';
-                                    }
-                                    elseif ($transaksi->status == 'Diterima') {
-                                        $status='Diterima';
-                                    }
-                                    elseif ($transaksi->status == 'Menunggu') {
-                                        $status='Menunggu';
-                                    }
-                                    elseif ($transaksi->status == 'Dalam Perjalanan') {
-                                        $status='Dalam Perjalanan';
-                                    }
-                                    elseif ($transaksi->status == 'Selesai') {
-                                        $status='Selesai';
-                                    }
-                                    else {
-                                        $status='Ditolak';
-                                    }
-                                    return $status;
-                                }),
-                            ])
-                        ->action(function (Transaksi $transaksi, array $data): void {
-                            $transaksi->status = $data['status'];
-                            $transaksi->save();
+                Filter::make('created_at')
+                ->form([
+                    DatePicker::make('tanggal'),
+                    DatePicker::make('created_until')
+                        ->default(now()),
+                    ])->columns(2)
+                ->columnSpanFull()
+            ], layout: FiltersLayout::AboveContent)
 
-                            Notification::make()
-                                ->title('Status Transaksi Telah Diperbaharui')
-                                ->success()
-                                ->send();
-                        })
-                        ->visible(function () {
-                            return auth()->user()->hasRole('Bank Pusat');
-                        }),
-                    ])
+            ->actions([
+                Tables\Actions\ViewAction::make('view')
+                    ->visible(function () {
+                        return auth()->user()->hasAnyRole('Bank Pusat','Bank Unit');
+                    }),
+                    // Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Edit Status')
+                    ->icon('heroicon-m-pencil-square')
+                    ->form([
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'Requested' => 'Requested',
+                                'Diterima' => 'Diterima',
+                                'Menunggu' => 'Menunggu',
+                                'Dalam Perjalanan' => 'Dalam Perjalanan',
+                                'Selesai' =>'Selesai',
+                                'Ditolak'=> 'Ditolak',
+                            ])
+                            ->default(function (Transaksi $transaksi) {
+                                $status = null;
+                                if ($transaksi->status == 'Requested') {
+                                    $status='Requested';
+                                }
+                                elseif ($transaksi->status == 'Diterima') {
+                                    $status='Diterima';
+                                }
+                                elseif ($transaksi->status == 'Menunggu') {
+                                    $status='Menunggu';
+                                }
+                                elseif ($transaksi->status == 'Dalam Perjalanan') {
+                                    $status='Dalam Perjalanan';
+                                }
+                                elseif ($transaksi->status == 'Selesai') {
+                                    $status='Selesai';
+                                }
+                                else {
+                                    $status='Ditolak';
+                                }
+                                return $status;
+                            }),
+                        ])
+                    ->action(function (Transaksi $transaksi, array $data): void {
+                        $transaksi->status = $data['status'];
+                        $transaksi->save();
+
+                        Notification::make()
+                            ->title('Status Transaksi Telah Diperbaharui')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(function () {
+                        return auth()->user()->hasRole('Bank Pusat');
+                    }),
+                ])
             ->headerActions([
                 ExportAction::make()->exporter(TransaksiExporter::class)
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
@@ -231,7 +245,7 @@ class TransaksiResource extends Resource
     }
     public static function getPluralModelLabel(): string
     {
-        return 'Daftar Transaksi'; // Set the plural label to be the same as the singular label
+        return 'Daftar Transaksi Bank Unit'; // Set the plural label to be the same as the singular label
     }
     public static function getPages(): array
     {

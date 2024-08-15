@@ -1,301 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="light" lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins&family=Rubik+Distressed&display=swap");
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body {
-          font-family: "Poppins", sans-serif;
-        }
+  <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 
-        .navbar a {
-          color: #e0e0e0;
-          font-weight: 600;
-        }
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
 
-        .navbar a:hover {
-          color: #fff;
-        }
-
-        /* Jumbotron */
-        #home h1 {
-          font-family: "Poppins";
-          font-style: normal;
-          font-weight: 800;
-          font-size: 56px;
-          line-height: 66px;
-          letter-spacing: 1.2px;
-          text-transform: capitalize;
-        }
-
-        #home p {
-          font-style: normal;
-          font-weight: 400;
-          font-size: 20px;
-          line-height: 23px;
-          letter-spacing: 0.2px;
-        }
-
-        #home .wrap {
-          margin-top: 200px;
-        }
-
-        #home .img {
-          width: 750px;
-          height: 500px;
-        }
-
-        /* Add Page */
-        #form {
-          padding-top: 50px;
-          padding-bottom: 50px;
-        }
-
-        #form .add {
-          font-family: "Poppins";
-          font-style: normal;
-          font-weight: 700;
-          font-size: 32px;
-          line-height: 38px;
-        }
-
-        #form .tambahp {
-          font-family: "Poppins";
-          font-style: normal;
-          font-weight: 400;
-          font-size: 16px;
-          line-height: 19px;
-          color: #757575;
-        }
-
-        #form form {
-          margin-top: 50px;
-        }
-
-        #form label,
-        input {
-          display: block;
-        }
-
-        #form label {
-          font-size: 20px;
-          line-height: 24px;
-          letter-spacing: 1.2px;
-          margin-top: 30px;
-        }
-
-        #form input {
-          width: 1000px;
-          height: 50px;
-          border: 1px solid #757575;
-          border-radius: 8px;
-          margin-top: 20px;
-          padding-left: 10px;
-          padding-right: 10px;
-        }
-
-        #form textarea {
-          padding: 20px;
-          margin-top: 20px;
-        }
-
-        /* List Pages */
-        #list {
-          padding-top: 50px;
-          padding-bottom: 50px;
-        }
-
-        #list h1 {
-          font-family: "Poppins";
-          font-style: normal;
-          font-weight: 900;
-          font-size: 32px;
-          line-height: 38px;
-        }
-
-        #list p {
-          font-family: "Poppins";
-          font-style: normal;
-          font-weight: 400;
-          font-size: 16px;
-          line-height: 19px;
-          color: #757575;
-          margin-top: 20px;
-        }
-
-        #list .card {
-          background: #ffffff;
-          box-shadow: 6px 14px 40px rgba(210, 210, 210, 0.6);
-          border-radius: 16px;
-          width: 400px;
-          margin-top: 50px;
-        }
-
-        /* Detail Page */
-        #detail {
-          padding-top: 50px;
-          padding-bottom: 50px;
-        }
-
-        #detail .tambahh1 {
-          font-family: "Poppins";
-          font-style: normal;
-          font-weight: 700;
-          font-size: 32px;
-          line-height: 38px;
-        }
-
-        #detail .tambahp {
-          font-family: "Poppins";
-          font-style: normal;
-          font-weight: 400;
-          font-size: 16px;
-          line-height: 19px;
-          color: #757575;
-        }
-
-        #detail img {
-          width: 500px;
-          height: 500px;
-          object-fit: contain;
-          border-radius: 16px;
-          margin-top: 20px;
-        }
-
-        #detail label,
-        input {
-          display: block;
-        }
-
-        #detail label {
-          font-size: 20px;
-          line-height: 24px;
-          letter-spacing: 1.2px;
-          margin-top: 30px;
-        }
-
-        #detail input {
-          width: 600px;
-          height: 50px;
-          border: 1px solid #757575;
-          border-radius: 8px;
-          margin-top: 20px;
-          padding-left: 10px;
-          padding-right: 10px;
-        }
-
-        #detail textarea {
-          padding: 20px;
-          margin-top: 20px;
-        }
-
-        #login .left {
-          background-image: url("../images/hrv.png");
-          background-size: cover;
-        }
-
-        .required {
-          color: red;
-        }
-
-        /* Profile Page */
-        #profile label {
-          width: 20%;
-        }
-
-        #profile .profile input {
-          width: 950px;
-          height: 40px;
-          background: #ffffff;
-          border: 1px solid #000000;
-          border-radius: 10px;
-          padding-left: 10px;
-        }
-
-        #profile h1 {
-          margin-left: auto;
-          margin-right: auto;
-          padding-bottom: 20px;
-        }
-
-        #profile .profile h2 {
-          font-size: 20px;
-          font-weight: 400;
-        }
-
-        .profile button {
-          width: 139px;
-          height: 50px;
-          border-radius: 8px;
-          border: none;
-          color: white;
-        }
-      </style>
-    <!-- Tambahkan CSS atau asset lain di sini -->
+  <title>Sampah Saku</title>
 </head>
-    <nav>
 
-    </nav>
 <body>
-    <a href="dashboard/login">Login</a>
-
-    <!-- Jumbotron -->
-    <section id="home">
-        <div class="container">
-            <div class="d-flex wrap justify-content-between align-items-center gap-5">
-            <div style="width: 900px">
-                <h1>Welcome To<br> EAD Show Room</h1>
-                <p class="mt-3">EAD Show Room is a most successful showroom<br>in this universe</p>
-                <div class="d-flex justify-content-lg-start mt-2">
-                </div>
-            </div>
-            <div class="d-flex flex-column justify-content-between" style="">
-                <img src='https://akcdn.detik.net.id/visual/2018/08/09/74d69c6a-18a4-4c16-8565-1c98f9f4388e_169.jpeg?w=650' class='card-img-top' alt='showroom_ead'>
-            </div>
-            </div>
+  <header class="sticky top-0 z-50 drop-shadow-md">
+    <div class="navbar bg-base-100 px-20 py-5">
+      <div class="navbar-start">
+        <div class="dropdown">
+          <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+            <iconify-icon icon="icon-park-outline:hamburger-button" width="32" height="32"></iconify-icon>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+            <li><a>Home</a></li>
+            <li><a>Blog</a></li>
+            <li><a>Tutorial</a></li>
+            <li><a>About</a></li>
+          </ul>
         </div>
-        </section>
-        <!-- Jumbotron End -->
+        <a href="/landing" class="flex text-center items-center gap-3">
+          <img src="/img/logo.svg" alt="">
+          <p class="text-xl font-bold">Sampah Saku</p>
+        </a>
+      </div>
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li><a>Home</a></li>
+          <li>
+            <details>
+              <summary>Blog</summary>
+            </details>
+          </li>
+          <li><a>Tutorial</a></li>
+          <li><a>About</a></li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <a class="btn btn-primary text-base-100 px-8" href="dashboard/login">Login</a>
+      </div>
+    </div>
+  </header>
 
-    <section id="list">
-        <div class="container">
-        <h1>Berita</h1>
-        @if (count($kontens) > 0)
-            <div class="table-responsive">
-            <table class="table-striped table">
-                <thead>
-                <tr>
-                    <th>Judul</th>
-                    <th>Konten</th>
-                    <th>Gambar</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach ($kontens as $konten)
-                    <tr>
-                    <td>{{ $konten->title }}</td>
-                    <td>{{ $konten->description }}</td>
-                    <!-- Gambar Post -->
-                            @if ($konten->image)
-                            <img src="{{ asset('storage/images/' . $konten->image) }}" alt="{{ $konten->title }}">
-                        @endif
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-            </div>
-        @else
-            <p>Tidak ada mobil di showroom ini.</p>
-        @endif
+  <main>
+    <div class="bg-base-200">
+      <section class="grid grid-cols-2 gap-0">
+        <div class="h-full w-full center">
+          <div class="prose">
+            <h1 class="my-0">Selamat Datang di SaSak!</h1>
+            <p>Kurangi Limbah, Selamatkan Bumi!</p>
+            <a> <button class="btn btn-primary text-base-100">
+              Lanjutkan Membaca <iconify-icon icon="formkit:arrowright"></iconify-icon>
+            </button>
+            </a>
+          </div>
+        </div>
+        <div class="flex h-full w-full justify-center">
+          <img src="img/hero.svg" alt="Sampah Saku">
+        </div>
+      </section>
+    </div>
+
+    <section>
+        <div class="scrollable-section flex justify-start gap-8 overflow-x-auto w-full">
+            @foreach($contents as $content)
+                <div class="card bg-base-100 shadow flex-shrink-0 w-80 h-96">
+                    <img class="w-80 skeleton aspect-video object-cover object-center" src="{{ $content->image }}" alt="{{ $content->title }}" />
+                    <div class="card-body">
+                        <h2 class="card-title">{{ $content->title }}</h2>
+                        <div class="card-actions justify-end">
+                            <a href="{{ $content->id == 1 ? '/konten/1' : ($content->id == 2 ? '/konten/2' : ($content->id == 3 ? '/konten/3' : ($content->id == 4 ? '/konten/4' : ($content->id == 5 ? '/konten/5' : '/default'))) ) }}" class="view-content-button">
+                                <button class="btn btn-outline btn-sm">
+                                    Lanjutkan Membaca <iconify-icon icon="formkit:arrowright"></iconify-icon>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </section>
 
+    <div class="bg-base-200">
+      <section class="grid grid-cols-2 gap-0">
+        <div class="h-full w-full center">
+          <div class="prose">
+            <h1 class="my-0">Join Our Newsletter</h1>
+            <p>We love to surprise our subscribers with occasional gifts.</p>
+          </div>
+        </div>
+        <div class="flex h-96 w-full justify-center items-center gap-4">
+          <input type="text" placeholder="Your email address" class="input input-bordered w-full max-w-xs" />
+          <button class="btn btn-primary text-base-100">
+            Subscribe <iconify-icon icon="formkit:arrowright"></iconify-icon>
+          </button>
+        </div>
+      </section>
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <section id=1 class="grid grid-cols-2 gap-0">
+      <div class="h-full w-full center">
+        <div class="w-[60%] flex flex-col gap-5">
+          <a href="" class="flex text-center items-center gap-3">
+            <img src="img/logo.svg" alt="">
+            <p class="text-xl font-bold">Sampah Saku</p>
+          </a>
+          <p>Sampah Saku is an online platform for supporting business process on Bank Sampah.</p>
+
+          <div class="flex gap-7 text-gray-500">
+            <a href="">
+              <iconify-icon icon="mdi:github" width="36" height="36"></iconify-icon>
+            </a>
+            <a href="">
+              <iconify-icon icon="mdi:instagram" width="36" height="36"></iconify-icon>
+            </a>
+            <a href="">
+              <iconify-icon icon="mdi:youtube" width="36" height="36"></iconify-icon>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="flex gap-24">
+        <div>
+          <p class="pb-5">SUPPORT</p>
+          <div class="space-y-3 font-semibold text-gray-500">
+            <p>FAQ</p>
+            <p>Terms of Use</p>
+            <p>Privacy Policy</p>
+          </div>
+        </div>
+        <div>
+          <p class="pb-5">COMPANY</p>
+          <div class="space-y-3 font-semibold text-gray-500">
+            <p>About Us</p>
+            <p>Contact</p>
+            <p>Career</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
 
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.view-content-button');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const contentId = this.getAttribute('data-id');
+                if (contentId) {
+                    window.location.href = `/konten/{contentId}`;
+                }
+            });
+        });
+    });
+</script>
 </html>

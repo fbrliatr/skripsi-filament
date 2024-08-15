@@ -19,7 +19,7 @@ class DaftarRute extends Model
         'tgl_angkut',
         'jam_angkut',
         'jarak',
-        'urutan',
+        // 'urutan',
     ];
     public function bankUnit(): BelongsTo
     {

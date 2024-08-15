@@ -74,7 +74,7 @@ class PenjadwalanResource extends Resource
                 elseif ($user->hasRole('Bank Unit')) {
                     // $query->whereHas('bankUnit', function (Builder $query) use ($user) {
                     // Bank Unit bisa melihat data kecuali milik Bank Pusat
-                        return $query->where('id_bank_unit', $user->bank_unit);
+                        return $query->where('name_bank_unit', $user->bank_unit);
                     // });
                 } else {
                     // Peran lain hanya bisa melihat data mereka sendiri
@@ -83,22 +83,30 @@ class PenjadwalanResource extends Resource
             })
             ->modelLabel('Daftar Jadwal Permintaan')
             ->columns([
-                Tables\Columns\TextColumn::make('id_bank_unit')
+                Tables\Columns\TextColumn::make('name_bank_unit')
                     ->label('Bank Unit')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('jam_angkut')
                     ->label('Jam')
                     ->sortable()
                     ->searchable()
                     ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('H:i') : 'N/A'), // Format jam dan menit
-                Tables\Columns\TextColumn::make('transaksi.status')
+                Tables\Columns\BadgeColumn::make('transaksi.status')
                     ->label('Status')
-                    ->sortable()
                     ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->colors([
+                        'warning' => fn ($state) => $state === 'Menunggu' or $state === 'Requested' or $state === 'Dalam Perjalanan',
+                        'danger' => fn ($state) => $state === 'Ditolak',
+                        // 'warning' => fn ($state) => $state === 'Menunggu',
+
+                    ]),
 
                 // Tables\Columns\TextColumn::make('tgl_angkut')
                 //     ->default('0000-00-00')
@@ -108,7 +116,7 @@ class PenjadwalanResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
 
             ])
@@ -135,7 +143,7 @@ class PenjadwalanResource extends Resource
     {
         return [
             'index' => Pages\ListPenjadwalans::route('/'),
-            'create' => Pages\CreatePenjadwalan::route('/create'),
+            // 'create' => Pages\CreatePenjadwalan::route('/create'),
             'view' => Pages\ViewPenjadwalan::route('/{record}'),
             'edit' => Pages\EditPenjadwalan::route('/{record}/edit'),
         ];

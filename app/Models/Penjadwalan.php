@@ -15,7 +15,7 @@ class Penjadwalan extends Model
     protected $table = 'penjadwalan'; // Pastikan nama tabel sesuai
     public function bankUnit(): BelongsTo
     {
-        return $this->belongsTo(BankUnit::class, 'id_bank_unit');
+        return $this->belongsTo(BankUnit::class, 'name_bank_unit');
     }
 
     public function transaksi(): BelongsTo

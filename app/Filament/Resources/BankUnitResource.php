@@ -81,7 +81,8 @@ class BankUnitResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('pengelola')
                     ->label('Pengelola')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
@@ -94,8 +95,6 @@ class BankUnitResource extends Resource
                 Tables\Columns\TextColumn::make('jarak')
                     ->searchable()
                     ->sortable(),
-
-
             ])
             ->filters([
                 //

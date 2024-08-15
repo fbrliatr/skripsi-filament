@@ -20,13 +20,14 @@ class Transaksi extends Model
 
     protected $fillable = [
         'code',
-        'bank_unit_id',
-        'warga_id',
+        'bank_unit_name',
+        // 'warga_id',
         'berat',
         'kategori',
         'status',
         'tanggal',
         'price',
+        'jam_angkut',
         'warga_bank_unit_id',
     ];
 
@@ -66,6 +67,7 @@ class Transaksi extends Model
     }
     public function totalHarga(): float{
         return $this->transaksiWargas()->sum('price');
+
     }
 
     public function bankUnit(): BelongsTo

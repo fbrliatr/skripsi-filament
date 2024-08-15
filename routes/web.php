@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Models\Konten;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KontenController;
 use Filament\Http\Controllers\Auth\AuthenticatedSessionController;
 
 
@@ -21,10 +22,13 @@ use Filament\Http\Controllers\Auth\AuthenticatedSessionController;
 // });
 
 
-Route::get('/', function () {
-    $kontens = Konten::all();
-    return view('landing', compact('kontens'));
-})->name('landing');
+// Route::get('/', function () {
+//     $kontens = Konten::all();
+//     return view('landing', compact('kontens'));
+// })->name('landing');
+
+Route::get('/', [KontenController::class, 'index']);
+Route::get('/konten/{id}', [KontenController::class, 'show'])->name('konten.show');
 
 // Route::get('admin/login', [AuthenticatedSessionController::class, 'create'])
 //     ->name('filament.auth.login');

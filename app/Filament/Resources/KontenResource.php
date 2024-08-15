@@ -16,8 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class KontenResource extends Resource
 {
     protected static ?string $model = Konten::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Konten'; // Set the plural label to be the same as the singular label
+    }
 
     public static function form(Form $form): Form
     {
@@ -38,14 +41,14 @@ class KontenResource extends Resource
             Forms\Components\MarkdownEditor::make('description')
                 ->label('Deskripsi Konten')
                 ->required()
-                ->maxLength(255)
+                ->maxLength(5000)
                 ->columnSpan('full'),
             Forms\Components\FileUpload::make('image')
                 ->label('Upload Gambar')
                 ->required()
                 ->image()
-                ->disk('public')
-                ->columnSpan('full'),
+                ->columnSpan('full')
+                ->disk('public'),
             ])->columns(3);
     }
 
@@ -55,7 +58,8 @@ class KontenResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Author')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul')
                     ->searchable()
@@ -63,14 +67,13 @@ class KontenResource extends Resource
                 Tables\Columns\TextColumn::make('tgl_rilis')
                     ->label('Tanggal Rilis')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Deskripsi')
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar')
                     ->searchable()
-                    ->sortable(),
+                    ->markdown(),
+                Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
                     ->date()
@@ -105,9 +108,5 @@ class KontenResource extends Resource
             'view' => Pages\ViewKonten::route('/{record}'),
             'edit' => Pages\EditKonten::route('/{record}/edit'),
         ];
-    }
-    public static function getPluralModelLabel(): string
-    {
-        return 'Daftar Konten'; // Set the plural label to be the same as the singular label
     }
 }

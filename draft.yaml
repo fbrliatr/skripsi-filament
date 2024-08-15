@@ -40,3 +40,24 @@ models:
     alamat: string
     relationships:
       hasMany: Transaksi
+
+  Konten:
+    author: string index
+    judul: string
+    content: string
+    category: string
+    tgl_rilis: date
+    image:
+      fields:
+        path:
+          type: string
+          length: 255
+        format:
+          type: string
+        length: 50
+      storage:
+        path: /uploads/images
+        quality: 80
+
+  Penjadwalan:
+  

@@ -76,23 +76,27 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('no_hp')
-                    ->searchable(),
+                    ->searchable()
+                    ->prefix('0'),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->searchable()
+                    ->sortable()
                     ->badge(),
                 Tables\Columns\TextColumn::make('bank_unit')
                     ->searchable()
+                    ->sortable()
                     ->Label('Bank Unit Terdaftar'),
                 Tables\Columns\TextColumn::make('alamat')
                     ->searchable()
                     ->Label('Alamat'),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('email_verified_at')
+                //     ->dateTime()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\TransaksiWargaResource\Pages;
 
-use App\Filament\Resources\TransaksiWargaResource;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\TransaksiWargaResource;
 
 class ListTransaksiWargas extends ListRecords
 {
@@ -13,7 +14,9 @@ class ListTransaksiWargas extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->visible(fn () => Auth::user()->hasRole(['Bank Unit', 'Bank Pusat'])),
+
         ];
     }
 }

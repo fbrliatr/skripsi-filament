@@ -129,15 +129,19 @@ class WargaResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->searchable()
+                    ->sortable()
                     ->label('No.'),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bank_unit')
                     ->searchable()
-                    ->Label('Bank Unit Terdaftar'),
+                    ->Label('Bank Unit Terdaftar')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('no_hp')
                     ->searchable()
                     ->prefix('0'),
@@ -145,11 +149,9 @@ class WargaResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_berat')
                     ->numeric()
-                    ->sortable()
                     ->getStateUsing(fn (Warga $record): string => number_format($record->totalBerat(), 2).' kg'),
                 Tables\Columns\TextColumn::make('total_pendapatan')
                     ->numeric()
-                    ->sortable()
                     ->getStateUsing(fn (Warga $record): string => 'Rp'.number_format($record->totalTransaksiPrice(), 2)),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -166,6 +168,7 @@ class WargaResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->headerActions([
                 ExportAction::make()->exporter(WargaExporter::class)
